@@ -17,3 +17,45 @@
  */
 
 namespace org.blockchain.evoting
+
+participant member identified by memberId {
+  o String memberId
+  o String firstName
+  o String lastName
+  o Boolean voted default = false
+  o Boolean isDirector default = false
+}
+
+asset electionAsset identified by electionAssetId {
+  o String electionAssetId
+  o String timeAnddate
+  o String duration
+  o String directorMemberId
+  o String[] candidatesNames
+  o String electedPersonName
+}
+
+asset voteAsset identified by voteAssetId {
+  o String voteAssetId
+  o String memberId
+  --> electionAsset electionAsset
+  o String selectedCandidateName
+  o String timeAnddate
+}
+
+transaction callForAnElection {
+  --> electionAsset electionAsset
+}
+
+transaction voteTransaction {
+  --> voteAsset voteAsset
+  --> electionAsset electionAsset
+}
+
+transaction announceElectionResult {
+  o String totalNumberOfVotes
+  o String numberOfElectedPersonVotes
+  --> electionAsset electionAsset
+}
+
+
