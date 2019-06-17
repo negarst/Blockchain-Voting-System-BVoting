@@ -28,8 +28,8 @@ participant member identified by memberId {
 
 asset electionAsset identified by electionAssetId {
   o String electionAssetId
-  o String timeAnddate
-  o String duration
+  o String startingTimestamp
+  o String endingTimestamp
   o String directorMemberId
   o String[] candidatesNames
   o String electedPersonName
@@ -40,7 +40,7 @@ asset voteAsset identified by voteAssetId {
   o String memberId
   --> electionAsset electionAsset
   o String selectedCandidateName
-  o String timeAnddate
+  o String votingTimestamp
 }
 
 transaction callForAnElection {
@@ -48,7 +48,10 @@ transaction callForAnElection {
 }
 
 transaction voteTransaction {
-  --> voteAsset voteAsset
+  o String voteAssetId
+  o String selectedCandidateName
+  o String votingTimestamp
+  --> member member
   --> electionAsset electionAsset
 }
 
