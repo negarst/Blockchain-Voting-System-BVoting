@@ -24,8 +24,8 @@ participant member identified by memberId {
   o String lastName
   o Boolean voted default = false
   o Boolean isDirector default = false
-  o String[] participatedInWhichElections
-  o String[] votedToWhomInPastElections
+  o String[] participatedInWhichElections optional
+  o String[] votedToWhomInPastElections optional
 }
 
 asset electionAsset identified by electionAssetId {
@@ -34,7 +34,7 @@ asset electionAsset identified by electionAssetId {
   o String endingTimestamp
   o String directorMemberId
   o String[] candidatesNames
-  o String[] candidatesVotes
+  o String[] candidatesVotes optional
 }
 
 asset voteAsset identified by voteAssetId {
