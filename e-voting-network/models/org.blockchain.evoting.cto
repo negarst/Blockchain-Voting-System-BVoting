@@ -24,6 +24,8 @@ participant member identified by memberId {
   o String lastName
   o Boolean voted default = false
   o Boolean isDirector default = false
+  o String[] participatedInWhichElections
+  o String[] votedToWhomInPastElections
 }
 
 asset electionAsset identified by electionAssetId {
@@ -32,20 +34,20 @@ asset electionAsset identified by electionAssetId {
   o String endingTimestamp
   o String directorMemberId
   o String[] candidatesNames
-  o String electedPersonName
+  o String[] candidatesVotes
 }
 
 asset voteAsset identified by voteAssetId {
   o String voteAssetId
   o String memberId
-  --> electionAsset electionAsset
+  o String electionAssetId
   o String selectedCandidateName
   o String votingTimestamp
 }
 
-transaction callForAnElection {
-  --> electionAsset electionAsset
-}
+// transaction callForAnElection {
+//   --> electionAsset electionAsset
+// }
 
 transaction voteTransaction {
   o String voteAssetId
@@ -55,10 +57,8 @@ transaction voteTransaction {
   --> electionAsset electionAsset
 }
 
-transaction announceElectionResult {
-  o String totalNumberOfVotes
-  o String numberOfElectedPersonVotes
-  --> electionAsset electionAsset
-}
+// transaction announceElectionResult {
+//   --> electionAsset electionAsset
+// }
 
 
