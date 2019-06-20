@@ -21,6 +21,28 @@
  */
 function voteTransaction(voteId, memberId, electionId, selectedCandidateName, votingTimestamp) {
 
+    // Check if no other election is on hold.
+    getAssetRegistry('org.blockchain.evoting.electionAsset')
+    .then(function (electionAssetRegistry) {
+        // Determine if the specific vote asset Id already does not exist in the vote asset registry.
+        return electionAssetRegistry.getAll();
+    }).then(function(allElections) {
+        allElections.forEach(function(election) {
+            if(election.endingTimestamp < Date.now() / 1000)
+            return;
+        });
+    });
+
+    // Reset every member's voted parameter to false.
+    getParticipantRegistry('org.blockchain.evoting.member')
+    .then(function (memberParticipantRegistry) {
+        return memberParticipantRegistry.getAll();
+    }).then(function(allMembers) {
+        allMembers.forEach(function(member) {
+            member.voted = false;
+        });
+    })
+
 	// Check if the new vote asset ID already exists.
     getAssetRegistry('org.blockchain.evoting.voteAsset')
     .then(function (voteAssetRegistry) {
@@ -174,7 +196,7 @@ function callForAnElection(
         newElectionAsset.directorMemberId = directorMemberId;
         newElectionAsset.candidatesNames = candidatesNames.slice(); // Copy the array
         var candidateVotes = [];
-        candidatesNames.forEach(function(item, index, array) {
+        candidatesNames.forEach(function() {
             candidatesVotes.push('0');
         });
         newElectionAsset.candidatesVotes = candidatesVotes.slice();
