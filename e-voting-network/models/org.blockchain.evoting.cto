@@ -50,9 +50,18 @@ transaction holdAnElection {
 }
 
 transaction voteTransaction {
+  --> electionAsset electionAsset
   --> voteAsset voteAsset
+  --> member member
 }
 
 transaction getAnElection {
   o String electionAssetId
+}
+
+event newVoteEvent {
+  o String firstName
+  o String lastName
+  o String electionAssetId
+  o String selectedCandidateName
 }
