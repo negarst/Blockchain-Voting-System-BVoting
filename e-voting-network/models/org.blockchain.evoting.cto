@@ -55,6 +55,7 @@ transaction voteTransaction {
   --> member member
 }
 
+@returns(electionAsset)
 transaction getElection {
   o String electionAssetId
 }

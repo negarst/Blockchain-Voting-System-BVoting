@@ -89,7 +89,7 @@ function voteTransaction(voting) {
 
 /**
  * Vote transaction processor function.
- * @param {org.blockchain.evoting.holdAnElection} election the holdAnElection transaction instance.
+ * @param {org.blockchain.evoting.callForElection} election the callForElection transaction instance.
  * @transaction
  */
 function callForElection(election) {
@@ -155,39 +155,29 @@ function callForElection(election) {
     //     // Add the new electionAsset resource to the election asset Registry.
     //     return electionAssetRegistry.add(newElectionAsset);
     // })
-    .then(function () {
-        // Emit the event of holding a new election.
-        let event = getFactory().newEvent('org.blockchain.evoting', 'newElectionEvent');
-        event.startingTimestamp = election.electionAsset.startingTimestamp;
-        event.endingTimestamp = election.electionAsset.endingTimestamp;
-        event.candidatesNames = election.electionAsset.candidatesNames.slice(); // Copy the array
+    // Emit the event of holding a new election.
+    let event = getFactory().newEvent('org.blockchain.evoting', 'newElectionEvent');
+    event.startingTimestamp = election.electionAsset.startingTimestamp;
+    event.endingTimestamp = election.electionAsset.endingTimestamp;
+    event.candidatesNames = election.electionAsset.candidatesNames.slice(); // Copy the array
 
-        emit(event);
-    });
+    emit(event);
 }
 
 /**
  * Vote transaction processor function.
- * @param {org.blockchain.evoting.getAnElection} election the getAnElection transaction instance.
+ * @param {org.blockchain.evoting.getElection} election the getElection transaction instance.
+ * @returns {org.blockchain.evoting.electionAsset} The electionAsset.
  * @transaction
  */
-function getAnElection(election) {
+function getElection(election) {
 
     // Check if the requested electionAsset ID exists.
-    return getParticipantRegistry('org.blockchain.evoting.electionAsset')
+    return getAssetRegistry('org.blockchain.evoting.electionAsset')
     .then(function (electionAssetRegistry) {
        if(electionAssetRegistry.exists(election.electionAssetId) == false) {
-           return;
+           throw new Error('The election asset ID does not exist.');
        }
-       let theElection = electionAssetRegistry.get(election.electionAssetId);
-       let result = '{'
-       +'"electionId" : '  + theElection.electionAssetId + ','
-       +'"startingTimestamp" : '  + theElection.startingTimestamp + ','
-       +'"endingTimestamp" : '  + theElection.endingTimestamp + ','
-       +'"directorMemberId" : '  + theElection.directorMemberId + ','
-       +'"candidatesNames" : '  + theElection.candidatesNames + ','
-       +'"candidatesVotes" : '  + theElection.candidatesVotes
-       +'}';
-       return result;
+       return electionAssetRegistry.get(election.electionAssetId);
     });
 }
