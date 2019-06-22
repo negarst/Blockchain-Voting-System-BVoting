@@ -92,16 +92,7 @@ function voteTransaction(voting) {
  * @param {org.blockchain.evoting.holdAnElection} election the holdAnElection transaction instance.
  * @transaction
  */
-function holdAnElection(election) {
-	// Check if the new electionAsset ID already exists, or not.
-    getAssetRegistry('org.blockchain.evoting.electionAsset')
-    .then(function (electionAssetRegistry) {
-        // Determine if the specific electionAsset ID exists in the electionAsset asset registry.
-        if(electionAssetRegistry.exists(election.electionAsset.electionAssetId) == true) {
-            return;
-        };
-    })
-
+function callForElection(election) {
     // Reset every member's voted parameter to false.
     getParticipantRegistry('org.blockchain.evoting.member')
     .then(function (memberParticipantRegistry) {
@@ -109,63 +100,64 @@ function holdAnElection(election) {
     }).then(function(allMembers) {
         allMembers.forEach(function(member) {
             member.voted = false;
+            memberParticipantRegistry.update(member);
         });
     })
 
 	// Check if the election's starting timestamp is legal.
-    if(election.electionAsset.startingTimestamp < Date.now() / 1000 ) {
-        // Date object is in Msec and timestamps is in secs
-		return;
-	}
+    // if(election.electionAsset.startingTimestamp < Date.now() / 1000 ) {
+    //     // Date object is in Msec and timestamps is in secs
+	// 	return;
+	// }
 
     // Check if the election's ending timestamp is legal.
-    if(election.electionAsset.endingTimestamp > election.electionAsset.startingTimestamp ) {
-        return;
-    }
+    // if(election.electionAsset.endingTimestamp > election.electionAsset.startingTimestamp ) {
+    //     return;
+    // }
 
 	// Check if the directorMemberId exists and is valid.
-    getAssetRegistry('org.blockchain.evoting.member')
-    .then(function (memberParticipantRegistry) {
-        // Determine if the specific member participant ID exists in the member asset registry.
-        if(memberParticipantRegistry.exists(election.electionAsset.directorMemberId) == false) {
-            return;
-        }
-        return memberParticipantRegistry;
-    })
-    .then(function(memberParticipantRegistry) {
-        // Determine if the specific member participant ID belongs to a director.
-        if(memberParticipantRegistry.get(election.electionAsset.directorMemberId).isDirector == false) {
-            return;
-        }
-    });
+    // getAssetRegistry('org.blockchain.evoting.member')
+    // .then(function (memberParticipantRegistry) {
+    //     // Determine if the specific member participant ID exists in the member asset registry.
+    //     if(memberParticipantRegistry.exists(election.electionAsset.directorMemberId) == false) {
+    //         return;
+    //     }
+    //     return memberParticipantRegistry;
+    // })
+    // .then(function(memberParticipantRegistry) {
+    //     // Determine if the specific member participant ID belongs to a director.
+    //     if(memberParticipantRegistry.get(election.electionAsset.directorMemberId).isDirector == false) {
+    //         return;
+    //     }
+    // });
 
 	// Check if candidatesNames are more than one.
-    if(election.electionAsset.candidatesNames.length < 2) {
-        return;
-    }
+    // if(election.electionAsset.candidatesNames.length < 2) {
+    //     return;
+    // }
 
-    return getParticipantRegistry('org.blockchain.evoting.electionAsset')
-    // Add the validated election asset to the election asset registry.
-    .then(function (electionAssetRegistry) {
-        // Define a new electionAsset resource
-        let newElectionAsset = getFactory().newResource('org.blockchain.evoting.electionAsset',
-        'electionAsset', election.electionAsset.electionAssetId);
-        newElectionAsset.startingTimestamp = election.electionAsset.startingTimestamp;
-        newElectionAsset.endingTimestamp = election.electionAsset.endingTimestamp;
-        newElectionAsset.directorMemberId = election.electionAsset.directorMemberId;
-        newElectionAsset.candidatesNames = election.electionAsset.candidatesNames.slice(); // Copy the array
-        let candidatesVotes = [];
-        candidatesNames.forEach(function() {
-            candidatesVotes.push('0');
-        });
-        newElectionAsset.candidatesVotes = candidatesVotes.slice(); // Copy the array
+    // return getParticipantRegistry('org.blockchain.evoting.electionAsset')
+    // // Add the validated election asset to the election asset registry.
+    // .then(function (electionAssetRegistry) {
+    //     // Define a new electionAsset resource
+    //     let newElectionAsset = getFactory().newResource('org.blockchain.evoting.electionAsset',
+    //     'electionAsset', election.electionAsset.electionAssetId);
+    //     newElectionAsset.startingTimestamp = election.electionAsset.startingTimestamp;
+    //     newElectionAsset.endingTimestamp = election.electionAsset.endingTimestamp;
+    //     newElectionAsset.directorMemberId = election.electionAsset.directorMemberId;
+    //     newElectionAsset.candidatesNames = election.electionAsset.candidatesNames.slice(); // Copy the array
+    //     let candidatesVotes = [];
+    //     candidatesNames.forEach(function() {
+    //         candidatesVotes.push('0');
+    //     });
+    //     newElectionAsset.candidatesVotes = candidatesVotes.slice(); // Copy the array
 
-        // Add the new electionAsset resource to the election asset Registry.
-        return electionAssetRegistry.add(newElectionAsset);
-    })
+    //     // Add the new electionAsset resource to the election asset Registry.
+    //     return electionAssetRegistry.add(newElectionAsset);
+    // })
     .then(function () {
         // Emit the event of holding a new election.
-        let event = getFactory().newEvent('org.blockchain.evoting', 'NewElection');
+        let event = getFactory().newEvent('org.blockchain.evoting', 'newElectionEvent');
         event.startingTimestamp = election.electionAsset.startingTimestamp;
         event.endingTimestamp = election.electionAsset.endingTimestamp;
         event.candidatesNames = election.electionAsset.candidatesNames.slice(); // Copy the array

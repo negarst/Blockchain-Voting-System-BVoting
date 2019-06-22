@@ -45,7 +45,7 @@ asset voteAsset identified by voteAssetId {
   o String votingTimestamp
 }
 
-transaction holdAnElection {
+transaction callForElection {
   --> electionAsset electionAsset
 }
 
@@ -55,7 +55,7 @@ transaction voteTransaction {
   --> member member
 }
 
-transaction getAnElection {
+transaction getElection {
   o String electionAssetId
 }
 
@@ -64,4 +64,10 @@ event newVoteEvent {
   o String lastName
   o String electionAssetId
   o String selectedCandidateName
+}
+
+event newElectionEvent {
+  o String startingTimestamp
+  o String endingTimestamp
+  o String[] candidatesNames
 }
