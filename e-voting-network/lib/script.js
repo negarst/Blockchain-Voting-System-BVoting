@@ -20,91 +20,71 @@
  * @transaction
  */
 function voteTransaction(voting) {
-
-    getAssetRegistry('org.blockchain.evoting.electionAsset')
-    .then(function(electionAssetRegistry) {
-        let electionAsset = electionAssetRegistry.get(voting.voteAsset.electionAssetId);
-            // Check if the election is still on hold.
-        if(electionAsset.endingTimestamp < Date.now() / 1000) {
+        // Check if the election is still on hold.
+        if(voting.electionAsset.endingTimestamp < Date.now / 1000) {
             throw new Error('The election is over.');
             return;
         }
-    });
-
-    getAssetRegistry('org.blockchain.evoting.electionAsset')
-    .then(function(electionAssetRegistry) {
-        let electionAsset = electionAssetRegistry.get(voting.voteAsset.electionAssetId);
-            // Check if the the election asset ID matches the vote asset's election asset ID
-            if(electionAsset.electionAssetId !== voting.voteAsset.electionAssetId) {
-                throw new Error('The vote ID does not match the election ID.');
-                return;
-            }
-    });
-
-
-    getAssetRegistry('org.blockchain.evoting.electionAsset')
-    .then(function(electionAssetRegistry) {
-        let electionAsset = electionAssetRegistry.get(voting.voteAsset.electionAssetId);
-        // Check if the voting timestamp is legal or not due to the related election's duration.
-        if(Date.now() / 1000 > electionAsset.endingTimestamp) {
-            throw new Error('The relevant election is over. You can not vote for it anymore.');
-        return;
-        }
-    });
-
-    getAssetRegistry('org.blockchain.evoting.member')
-    .then(function(memberParticipantRegistry) {
-        // Increment the number of selected candidate's votes in the related election.
-        member = memberParticipantRegistry.get(voting.voteAsset.memberId);
-        // Check if the member has already voted in this election.
-        if(member.voted == true) {
-            throw new Error('The member has already voted in this election.');
+    
+        // Check if the the election asset ID matches the vote asset's election asset ID
+        if(voting.electionAsset.electionAssetId !== voting.voteAsset.electionAssetId) {
+            throw new Error('The vote ID does not match the election ID.');
             return;
         }
-    });
-
-    getAssetRegistry('org.blockchain.evoting.electionAsset')
-    .then(function(electionAssetRegistry) {
-        let electionAsset = electionAssetRegistry.get(voting.voteAsset.electionAssetId);
+        
+        // Check if the the member ID matches the vote asset's member ID
+        if(voting.member.memberId !== voting.voteAsset.memberId) {
+            throw new Error('The member ID does not match the vote ID.');
+            return;
+        }
+    
+        // Check if the voting timestamp is legal or not due to the related election's duration.
+        if(voting.voteAsset.votingTimestamp > voting.electionAsset.endingTimestamp) {
+                throw new Error('The election is over. You can not vote in this election anymore.');
+            return;
+        }
+    
+        // Check if the member has already voted in this election.
+        if(voting.member.voted == true) {
+            throw new Error('You have already voted in this election.');
+            return;
+        }
+    
         // Check if the selected candidate name is whithin the election's candidate names.
-        if(electionAsset.candidatesNames.includes(voting.voteAsset.selectedCandidateName) == false) {
+        if(voting.electionAsset.candidatesNames.includes(voting.voteAsset.selectedCandidateName) == false) {
             throw new Error("The selected candidate's name is not whithin the election's candidates names.");
             return;
         }
-    });
-
-    return getParticipantRegistry('org.blockchain.evoting.member')
-    .then(function (memberParticipantRegistry) {
-        // Update the voted parameter of the member participant.
-        member = memberParticipantRegistry.get(voting.voteAsset.memberId);
-        member.voted = true;
-
-        // Update the member participant in the participant registry.
-		return memberParticipantRegistry.update(member);
-    })
-    .then(getAssetRegistry('org.blockchain.evoting.electionAsset')
-        .then(function(electionAssetRegistry) {
-            let electionAsset = electionAssetRegistry.get(voting.voteAsset.electionAssetId);
-            // Increment the number of selected candidate's votes in the related election.
-            let selectedCandidateIndex =
-            electionAsset.candidatesNames.indexOf(voting.voteAsset.selectedCandidateName);
-            electionAsset.candidatesVotes[selectedCandidateIndex] += 1;
-
-            // Update the election asset in the asset registry.
-            return electionAssetRegistry.update(electionAsset);
-    }))
-    .then(getParticipantRegistry('org.blockchain.evoting.member')
+    
+        return getParticipantRegistry('org.blockchain.evoting.member')
         .then(function (memberParticipantRegistry) {
-        // Update the voted parameter of the member participant.
-        let member = memberParticipantRegistry.get(voting.voteAsset.memberId);
-        let event = getFactory().newEvent('org.blockchain.evoting', 'newVoteEvent');
-        event.firstName = member.firstName;
-        event.lastName = member.lastName;
-        event.electionAssetId = voting.voteAsset.electionAssetId;
-        event.selectedCandidateName = voting.voteAsset.selectedCandidateName;
-        
-        emit(event);
-    }));
+            // Update the voted parameter of the member participant.
+            voting.member.voted = true;
+    
+            // Update the member participant in the participant registry.
+            return memberParticipantRegistry.update(voting.member);
+        })
+        .then(getAssetRegistry('org.blockchain.evoting.electionAsset')
+            .then(function(electionAssetRegistry) {
+                // Increment the number of selected candidate's votes in the related election.
+                let selectedCandidateIndex =
+                voting.electionAsset.candidatesNames.indexOf(voting.voteAsset.selectedCandidateName);
+                voting.electionAsset.candidatesVotes[selectedCandidateIndex] =
+                (parseInt(voting.electionAsset.candidatesVotes[selectedCandidateIndex]) + 1).toString();
+    
+                // Update the election asset in the asset registry.
+                return electionAssetRegistry.update(voting.electionAsset);
+            }))
+        .then(function() {
+            // Emit an event for the added vote asset.
+            let event = getFactory().newEvent('org.blockchain.evoting', 'newVoteEvent');
+            event.firstName = voting.member.firstName;
+            event.lastName = voting.member.lastName;
+            event.electionAssetId = voting.voteAsset.electionAssetId;
+            event.selectedCandidateName = voting.voteAsset.selectedCandidateName;
+            
+            emit(event);
+            });
 }
 
 /**
@@ -122,6 +102,16 @@ function callForElection(election) {
             member.voted = false;
             memberParticipantRegistry.update(member);
         });
+    })
+
+    election.electionAsset.candidatesNames.forEach(function(candidateName, index, array) {
+        election.electionAsset.candidatesVotes.push("0");
+    });
+
+    getAssetRegistry('org.blockchain.evoting.electionAsset')
+    .then(function(electionAssetRegistry) {
+        // Update the electionAsset CandidatesVotes with an array of zeros
+        return electionAssetRegistry.update(election.electionAsset);
     })
 
 	// Check if the election's starting timestamp is legal.

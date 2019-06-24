@@ -34,6 +34,16 @@
  */
 
 
+rule membersUpdateElectionCandidatesVotes {
+    description: "All members are permitted to update the election's candidatesVotes parameter in voteTransaction."
+    participant(r): "org.blockchain.evoting.member"
+    operation: UPDATE
+    resource(c): "org.blockchain.evoting.electionAsset"
+    transaction(tx): "org.blockchain.evoting.voteTransaction"
+    condition: (true)
+    action: ALLOW
+}
+
 rule DirectorsCreateAnElection {
     description: "Only director members are permitted to hold an election"
     participant(r): "org.blockchain.evoting.member"
@@ -45,6 +55,16 @@ rule DirectorsCreateAnElection {
     c.endingTimestamp > c.startingTimestamp &&
     c.startingTimestamp > (Date.now() / 1000) &&
     c.candidatesNames.length > 1)
+    action: ALLOW
+}
+
+rule membersUpdateVoted {
+    description: "All members are permitted to update their voted parameters in voteTransaction."
+    participant(r): "org.blockchain.evoting.member"
+    operation: UPDATE
+    resource(c): "org.blockchain.evoting.member"
+    transaction(tx): "org.blockchain.evoting.voteTransaction"
+    condition: (true)
     action: ALLOW
 }
 

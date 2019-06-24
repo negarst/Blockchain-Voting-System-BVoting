@@ -40,9 +40,8 @@ asset electionAsset identified by electionAssetId {
 asset voteAsset identified by voteAssetId {
   o String voteAssetId
   o String memberId
-  o String electionAssetId
-  o String selectedCandidateName
-  o String votingTimestamp
+  o String electionAssetId default = ""
+  o String selectedCandidateName default = ""
 }
 
 transaction callForElection {
@@ -50,9 +49,9 @@ transaction callForElection {
 }
 
 transaction voteTransaction {
-  --> electionAsset electionAsset
   --> voteAsset voteAsset
   --> member member
+  --> electionAsset electionAsset
 }
 
 @returns(electionAsset)
