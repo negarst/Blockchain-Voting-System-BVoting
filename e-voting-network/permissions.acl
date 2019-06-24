@@ -34,10 +34,10 @@
  */
 
 
-rule ElectionDirectors {
+rule DirectorsCreateAnElection {
     description: "Only director members are permitted to hold an election"
     participant(r): "org.blockchain.evoting.member"
-    operation: CREATE, READ, UPDATE
+    operation: CREATE
     resource(c): "org.blockchain.evoting.electionAsset"
     condition:
     (r.isDirector == true &&
@@ -45,6 +45,24 @@ rule ElectionDirectors {
     c.endingTimestamp > c.startingTimestamp &&
     c.startingTimestamp > (Date.now() / 1000) &&
     c.candidatesNames.length > 1)
+    action: ALLOW
+}
+
+rule membersGetAnElection {
+    description: "All members are permitted to read any election's data."
+    participant(r): "org.blockchain.evoting.member"
+    operation: READ
+    resource(c): "org.blockchain.evoting.getElection"
+    condition: (true)
+    action: ALLOW
+}
+
+rule membersVote {
+    description: "All members are permitted to vote once in every election."
+    participant(r): "org.blockchain.evoting.member"
+    operation: CREATE
+    resource(c): "org.blockchain.evoting.voteTransaction"
+    condition: (true)
     action: ALLOW
 }
 
