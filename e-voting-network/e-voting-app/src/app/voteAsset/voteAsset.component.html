@@ -65,16 +65,6 @@
             
           
 
-            
-              <div class="form-group text-left">
-                <label for="votingTimestamp">votingTimestamp</label>
-                
-                  <input formControlName="votingTimestamp" type="text" class="form-control">
-                
-              </div>
-            
-          
-
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -133,15 +123,6 @@
               
               
                 <input [ngModel]="selectedCandidateName"formControlName="selectedCandidateName" type="text" class="form-control">
-              
-
-            </div>
-          
-            <div class="form-group text-left">
-              <label for="votingTimestamp">votingTimestamp</label>
-              
-              
-                <input [ngModel]="votingTimestamp"formControlName="votingTimestamp" type="text" class="form-control">
               
 
             </div>
@@ -225,8 +206,6 @@
             
                 <th class="info">selectedCandidateName</th>
             
-                <th class="info">votingTimestamp</th>
-            
               <th class="info-actions">Actions</th>
           </tr>
         </thead>
@@ -241,8 +220,6 @@
                 <td class="asset-properties">{{asset.electionAssetId}}</td>
             
                 <td class="asset-properties">{{asset.selectedCandidateName}}</td>
-            
-                <td class="asset-properties">{{asset.votingTimestamp}}</td>
             
             <td>
               <button (click)="getForm(asset.voteAssetId);" type="button" class="btn btn-update" data-toggle="modal" data-target="#updateAssetModal">

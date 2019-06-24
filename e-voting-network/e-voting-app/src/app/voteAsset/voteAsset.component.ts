@@ -36,15 +36,13 @@ export class voteAssetComponent implements OnInit {
   memberId = new FormControl('', Validators.required);
   electionAssetId = new FormControl('', Validators.required);
   selectedCandidateName = new FormControl('', Validators.required);
-  votingTimestamp = new FormControl('', Validators.required);
 
   constructor(public servicevoteAsset: voteAssetService, fb: FormBuilder) {
     this.myForm = fb.group({
       voteAssetId: this.voteAssetId,
       memberId: this.memberId,
       electionAssetId: this.electionAssetId,
-      selectedCandidateName: this.selectedCandidateName,
-      votingTimestamp: this.votingTimestamp
+      selectedCandidateName: this.selectedCandidateName
     });
   };
 
@@ -105,16 +103,14 @@ export class voteAssetComponent implements OnInit {
       'voteAssetId': this.voteAssetId.value,
       'memberId': this.memberId.value,
       'electionAssetId': this.electionAssetId.value,
-      'selectedCandidateName': this.selectedCandidateName.value,
-      'votingTimestamp': this.votingTimestamp.value
+      'selectedCandidateName': this.selectedCandidateName.value
     };
 
     this.myForm.setValue({
       'voteAssetId': null,
       'memberId': null,
       'electionAssetId': null,
-      'selectedCandidateName': null,
-      'votingTimestamp': null
+      'selectedCandidateName': null
     });
 
     return this.servicevoteAsset.addAsset(this.asset)
@@ -125,8 +121,7 @@ export class voteAssetComponent implements OnInit {
         'voteAssetId': null,
         'memberId': null,
         'electionAssetId': null,
-        'selectedCandidateName': null,
-        'votingTimestamp': null
+        'selectedCandidateName': null
       });
       this.loadAll();
     })
@@ -145,8 +140,7 @@ export class voteAssetComponent implements OnInit {
       $class: 'org.blockchain.evoting.voteAsset',
       'memberId': this.memberId.value,
       'electionAssetId': this.electionAssetId.value,
-      'selectedCandidateName': this.selectedCandidateName.value,
-      'votingTimestamp': this.votingTimestamp.value
+      'selectedCandidateName': this.selectedCandidateName.value
     };
 
     return this.servicevoteAsset.updateAsset(form.get('voteAssetId').value, this.asset)
@@ -200,8 +194,7 @@ export class voteAssetComponent implements OnInit {
         'voteAssetId': null,
         'memberId': null,
         'electionAssetId': null,
-        'selectedCandidateName': null,
-        'votingTimestamp': null
+        'selectedCandidateName': null
       };
 
       if (result.voteAssetId) {
@@ -228,12 +221,6 @@ export class voteAssetComponent implements OnInit {
         formObject.selectedCandidateName = null;
       }
 
-      if (result.votingTimestamp) {
-        formObject.votingTimestamp = result.votingTimestamp;
-      } else {
-        formObject.votingTimestamp = null;
-      }
-
       this.myForm.setValue(formObject);
 
     })
@@ -253,8 +240,7 @@ export class voteAssetComponent implements OnInit {
       'voteAssetId': null,
       'memberId': null,
       'electionAssetId': null,
-      'selectedCandidateName': null,
-      'votingTimestamp': null
+      'selectedCandidateName': null
       });
   }
 

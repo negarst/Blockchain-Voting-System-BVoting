@@ -25,15 +25,14 @@ import {Event} from './org.hyperledger.composer.system';
       memberId: string;
       electionAssetId: string;
       selectedCandidateName: string;
-      votingTimestamp: string;
    }
    export class callForElection extends Transaction {
       electionAsset: electionAsset;
    }
    export class voteTransaction extends Transaction {
-      electionAsset: electionAsset;
       voteAsset: voteAsset;
       member: member;
+      electionAsset: electionAsset;
    }
    export class getElection extends Transaction {
       electionAssetId: string;

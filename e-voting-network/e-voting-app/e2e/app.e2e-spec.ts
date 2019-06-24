@@ -81,10 +81,10 @@ describe('Starting tests for e-voting-app', function() {
       });
     });
 
-    it('voteAsset table should have 6 columns',() => {
+    it('voteAsset table should have 5 columns',() => {
       page.navigateTo('/voteAsset');
       element.all(by.css('.thead-cols th')).then(function(arr) {
-        expect(arr.length).toEqual(6); // Addition of 1 for 'Action' column
+        expect(arr.length).toEqual(5); // Addition of 1 for 'Action' column
       });
     });
   

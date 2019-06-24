@@ -32,18 +32,18 @@ export class voteTransactionComponent implements OnInit {
   private currentId;
   private errorMessage;
 
-  electionAsset = new FormControl('', Validators.required);
   voteAsset = new FormControl('', Validators.required);
   member = new FormControl('', Validators.required);
+  electionAsset = new FormControl('', Validators.required);
   transactionId = new FormControl('', Validators.required);
   timestamp = new FormControl('', Validators.required);
 
 
   constructor(private servicevoteTransaction: voteTransactionService, fb: FormBuilder) {
     this.myForm = fb.group({
-      electionAsset: this.electionAsset,
       voteAsset: this.voteAsset,
       member: this.member,
+      electionAsset: this.electionAsset,
       transactionId: this.transactionId,
       timestamp: this.timestamp
     });
@@ -103,17 +103,17 @@ export class voteTransactionComponent implements OnInit {
   addTransaction(form: any): Promise<any> {
     this.Transaction = {
       $class: 'org.blockchain.evoting.voteTransaction',
-      'electionAsset': this.electionAsset.value,
       'voteAsset': this.voteAsset.value,
       'member': this.member.value,
+      'electionAsset': this.electionAsset.value,
       'transactionId': this.transactionId.value,
       'timestamp': this.timestamp.value
     };
 
     this.myForm.setValue({
-      'electionAsset': null,
       'voteAsset': null,
       'member': null,
+      'electionAsset': null,
       'transactionId': null,
       'timestamp': null
     });
@@ -123,9 +123,9 @@ export class voteTransactionComponent implements OnInit {
     .then(() => {
       this.errorMessage = null;
       this.myForm.setValue({
-        'electionAsset': null,
         'voteAsset': null,
         'member': null,
+        'electionAsset': null,
         'transactionId': null,
         'timestamp': null
       });
@@ -142,9 +142,9 @@ export class voteTransactionComponent implements OnInit {
   updateTransaction(form: any): Promise<any> {
     this.Transaction = {
       $class: 'org.blockchain.evoting.voteTransaction',
-      'electionAsset': this.electionAsset.value,
       'voteAsset': this.voteAsset.value,
       'member': this.member.value,
+      'electionAsset': this.electionAsset.value,
       'timestamp': this.timestamp.value
     };
 
@@ -193,18 +193,12 @@ export class voteTransactionComponent implements OnInit {
     .then((result) => {
       this.errorMessage = null;
       const formObject = {
-        'electionAsset': null,
         'voteAsset': null,
         'member': null,
+        'electionAsset': null,
         'transactionId': null,
         'timestamp': null
       };
-
-      if (result.electionAsset) {
-        formObject.electionAsset = result.electionAsset;
-      } else {
-        formObject.electionAsset = null;
-      }
 
       if (result.voteAsset) {
         formObject.voteAsset = result.voteAsset;
@@ -216,6 +210,12 @@ export class voteTransactionComponent implements OnInit {
         formObject.member = result.member;
       } else {
         formObject.member = null;
+      }
+
+      if (result.electionAsset) {
+        formObject.electionAsset = result.electionAsset;
+      } else {
+        formObject.electionAsset = null;
       }
 
       if (result.transactionId) {
@@ -246,9 +246,9 @@ export class voteTransactionComponent implements OnInit {
 
   resetForm(): void {
     this.myForm.setValue({
-      'electionAsset': null,
       'voteAsset': null,
       'member': null,
+      'electionAsset': null,
       'transactionId': null,
       'timestamp': null
     });
